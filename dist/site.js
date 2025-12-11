@@ -262,6 +262,7 @@ function updateExport() {
     { mode: currentHueModel, ...currentModelFn(color) }
   ));
 
+  console.log(poline);
   logColors(colorsHEX);
 
   fetch(`https://api.color.pizza/v1/?values=${colorsHEX.map(c => c.replace('#', '')).join()
@@ -277,6 +278,10 @@ function updateExport() {
       let { colors, paletteTitle } = data;
       $export.innerHTML = `
           <h2 class="export__title">${paletteTitle}</h2>
+          <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button id="copyHexBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy Hex Colors</button>
+            <button id="copyCssBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy as CSS Variables</button>
+          </div>
           <ol class="export__list">
             ${colors.map(color => {
         const { requestedHex, name } = color;
@@ -301,6 +306,37 @@ function updateExport() {
             `}).join('')}
           </ol>
         `;
+
+      const snakeCaseTitle = paletteTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
+      const $copyHexBtn = document.getElementById('copyHexBtn');
+      const $copyCssBtn = document.getElementById('copyCssBtn');
+
+      if ($copyHexBtn) {
+        $copyHexBtn.addEventListener('click', () => {
+          const text = colorsHEX.join('\n');
+          navigator.clipboard.writeText(text);
+          const originalText = $copyHexBtn.innerText;
+          $copyHexBtn.innerText = 'Copied!';
+          setTimeout(() => $copyHexBtn.innerText = originalText, 1000);
+        });
+      }
+
+      if ($copyCssBtn) {
+        $copyCssBtn.addEventListener('click', () => {
+          const cssLines = colorsHEX.map((hex, i) => {
+            const step = i === 0 ? 50 : i * 100;
+            return `  --${snakeCaseTitle}-${step}: ${hex};`;
+          });
+          const text = `:root {\n${cssLines.join('\n')}\n}`;
+          navigator.clipboard.writeText(text);
+
+          const originalText = $copyCssBtn.innerText;
+          $copyCssBtn.innerText = 'Copied!';
+          setTimeout(() => $copyCssBtn.innerText = originalText, 1000);
+        });
+      }
+
       $export.style.height = 'auto';
       $export.classList.remove('export--loading');
     })
