@@ -686,7 +686,7 @@ button:not([data-copy-code]) {
 
 .draw {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   position: absolute;
   inset: 0;
 }
