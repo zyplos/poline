@@ -21,10 +21,10 @@
   },
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm test && npm run lint && tsc --build && node ./build.js",
+    "build": "bun test && bun run lint && tsc --build && bun ./build.js",
     "test": "vitest run",
-    "lint": "eslint . --ext .ts && npx prettier --check ./src/",
-    "prettier": "npx prettier --write ./src/",
+    "lint": "eslint . --ext .ts && bunx prettier --check ./src/",
+    "prettier": "bunx prettier --write ./src/",
     "bsc": "browser-sync start --server 'dist' --files 'dist'",
     "watch": "esbuild ./src/index.ts --bundle --sourcemap --outfile=./dist/index.mjs --format=esm --watch",
     "dev": "npm-run-all --parallel watch bsc"
