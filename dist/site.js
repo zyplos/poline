@@ -233,23 +233,9 @@ $picker.appendChild($svg);
 $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
 
 let timer = null;
-let exportAbortController = null;
+// let exportAbortController = null;
 
 function updateExport() {
-  // Cancel previous fetch if still pending
-  if (exportAbortController) {
-    exportAbortController.abort();
-  }
-  exportAbortController = new AbortController();
-
-  $export.style.height = `${$export.scrollHeight}px`;
-  $export.classList.add('export--loading');
-
-  const $list = document.createElement('ol');
-  $list.classList.add('export__list');
-
-
-
   const colorsOKlab = poline.colors.map(color => toOKlab(
     { mode: currentHueModel, ...currentModelFn(color) }
   ));
@@ -262,98 +248,74 @@ function updateExport() {
     { mode: currentHueModel, ...currentModelFn(color) }
   ));
 
-  console.log(poline);
+  // console.log(poline);
   logColors(colorsHEX);
 
-  fetch(`https://api.color.pizza/v1/?values=${colorsHEX.map(c => c.replace('#', '')).join()
-    }&list=bestOf&noduplicates=true`,
-    {
-      headers: {
-        'X-Referrer': 'https://meodai.github.io/poline/',
-      },
-      signal: exportAbortController.signal
-    }
-  ).then(res => res.json())
-    .then(data => {
-      let { colors, paletteTitle } = data;
-      $export.innerHTML = `
-          <input type="text" class="export__title" value="${paletteTitle}" id="paletteTitleInput" style="background: transparent; border: none; border-bottom: 1px solid var(--line); color: inherit; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 2.5rem; letter-spacing: -0.05em; margin-bottom: 0.5rem;" />
-          <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button id="copyHexBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy Hex Colors</button>
-            <button id="copyCssBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy as CSS Variables</button>
-          </div>
-          <ol class="export__list">
-            ${colors.map(color => {
-        const { requestedHex, name } = color;
-        const index = colorsHEX.indexOf(requestedHex);
-        const oklabcss = colorCSSOKlab[index];
-        const { l, a, b } = colorsOKlab[index];
-        const isInSrgb = colorsInGamut[index];
-        const exportValue = isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`;
-        return `
-              <li data-copy="${exportValue}" class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}; --i: ${index / colorsHEX.length};">
-                <div class="export__sample">
-                </div>
-                <div class="export__label">
-                  <strong class="export__name">
-                    <span class="wrap">${name}</span>
-                  </strong>
-                  <span class="export__hex">
-                    <span class="wrap">${exportValue}</span>
-                  </span>
-                </div>
-              </li>
-            `}).join('')}
-          </ol>
-        `;
+  let paletteTitle = "Poline Palette";
 
-      const $copyHexBtn = document.getElementById('copyHexBtn');
-      const $copyCssBtn = document.getElementById('copyCssBtn');
-      const $paletteTitleInput = document.getElementById('paletteTitleInput');
+  $export.innerHTML = `
+      <input type="text" class="export__title" value="${paletteTitle}" id="paletteTitleInput" style="background: transparent; border: none; border-bottom: 1px solid var(--line); color: inherit; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 2.5rem; letter-spacing: -0.05em; margin-bottom: 0.5rem;" />
+      <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button id="copyHexBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy Hex Colors</button>
+        <button id="copyCssBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy as CSS Variables</button>
+      </div>
+      <ol class="export__list">
+        ${colorsHEX.map((requestedHex, index) => {
+    const oklabcss = colorCSSOKlab[index];
+    const { l, a, b } = colorsOKlab[index];
+    const isInSrgb = colorsInGamut[index];
+    const exportValue = isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`;
+    return `
+          <li data-copy="${exportValue}" class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}; --i: ${index / colorsHEX.length};">
+            <div class="export__sample">
+            </div>
+            <div class="export__label">
+              <span class="export__hex">
+                <span class="wrap">${exportValue}</span>
+              </span>
+            </div>
+          </li>
+        `}).join('')}
+      </ol>
+    `;
 
-      if ($copyHexBtn) {
-        $copyHexBtn.addEventListener('click', () => {
-          const text = colorsHEX.join('\n');
-          navigator.clipboard.writeText(text);
-          const originalText = $copyHexBtn.innerText;
-          $copyHexBtn.innerText = 'Copied!';
-          setTimeout(() => $copyHexBtn.innerText = originalText, 1000);
-        });
-      }
+  const $copyHexBtn = document.getElementById('copyHexBtn');
+  const $copyCssBtn = document.getElementById('copyCssBtn');
+  const $paletteTitleInput = document.getElementById('paletteTitleInput');
 
-      const toCamelCase = (str) => {
-        return str.toLowerCase()
-          .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
-      }
-
-      if ($copyCssBtn) {
-        $copyCssBtn.addEventListener('click', () => {
-          const currentTitle = $paletteTitleInput ? $paletteTitleInput.value : paletteTitle;
-          const camelCaseTitle = toCamelCase(currentTitle);
-          const cssLines = colorsHEX.map((hex, i) => {
-            const step = i === 0 ? 50 : i * 100;
-            return `  --${camelCaseTitle}-${step}: ${hex};`;
-          });
-          const text = `:root {\n${cssLines.join('\n')}\n}`;
-          navigator.clipboard.writeText(text);
-
-          const originalText = $copyCssBtn.innerText;
-          $copyCssBtn.innerText = 'Copied!';
-          setTimeout(() => $copyCssBtn.innerText = originalText, 1000);
-        });
-      }
-
-      $export.style.height = 'auto';
-      $export.classList.remove('export--loading');
-    })
-    .catch(err => {
-      if (err.name === 'AbortError') {
-        // Ignore abort errors - this is expected behavior
-        return;
-      }
-      console.error('Export fetch error:', err);
-      $export.classList.remove('export--loading');
+  if ($copyHexBtn) {
+    $copyHexBtn.addEventListener('click', () => {
+      const text = colorsHEX.join('\n');
+      navigator.clipboard.writeText(text);
+      const originalText = $copyHexBtn.innerText;
+      $copyHexBtn.innerText = 'Copied!';
+      setTimeout(() => $copyHexBtn.innerText = originalText, 1000);
     });
+  }
+
+  const toCamelCase = (str) => {
+    return str.toLowerCase()
+      .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+  }
+
+  if ($copyCssBtn) {
+    $copyCssBtn.addEventListener('click', () => {
+      const currentTitle = $paletteTitleInput ? $paletteTitleInput.value : paletteTitle;
+      const camelCaseTitle = toCamelCase(currentTitle);
+      const cssLines = colorsHEX.map((hex, i) => {
+        const step = i === 0 ? 50 : i * 100;
+        return `  --${camelCaseTitle}-${step}: ${hex};`;
+      });
+      const text = `:root {\n${cssLines.join('\n')}\n}`;
+      navigator.clipboard.writeText(text);
+
+      const originalText = $copyCssBtn.innerText;
+      $copyCssBtn.innerText = 'Copied!';
+      setTimeout(() => $copyCssBtn.innerText = originalText, 1000);
+    });
+  }
+
+  $export.style.height = 'auto';
 }
 
 let drawTimer = null;
