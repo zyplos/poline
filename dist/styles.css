@@ -208,11 +208,10 @@ svg {
   stroke: var(--onBg);
   stroke-width: 0.15;
   stroke-dasharray: var(--length) var(--length);
-  stroke-dashoffset: var(--length);
+  stroke-dashoffset: 0;
   pointer-events: none;
   fill: none;
-  animation: dasharray .8s cubic-bezier(.3, .7, 0, 1) forwards;
-  animation-delay: 2s;
+  animation: none;
 }
 
 .is-loaded .wheel__line {
@@ -243,11 +242,8 @@ svg {
 
 .wheel__anchor {
   cursor: grab;
-  animation: anchor .3s cubic-bezier(0.3, 0.7, 0, 1) forwards;
-  animation-delay: 3s;
-  opacity: 0;
+  opacity: 1;
   stroke-dasharray: 12.5 12.5;
-  stroke-dashoffset: calc(12.5 - 12.5 * var(--s));
   stroke-dashoffset: 12.5;
   stroke: transparent;
   stroke-width: 0.2;
@@ -298,8 +294,8 @@ svg {
 
 .picker.rings-enabled .wheel__ring-group {
   display: block;
-  animation: ringScaleIn .2s cubic-bezier(0.3, 0.7, 0, 1) forwards;
-  animation-delay: 3.1s;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .is-loaded .picker.rings-enabled .wheel__ring-group {
@@ -360,11 +356,8 @@ svg {
   pointer-events: none;
   transition: font-size 0.3s cubic-bezier(.3, .7, 0, 1);
   width: 10%;
-  animation: dropIn 1.5s cubic-bezier(.3, .7, 0, 1);
-  animation-delay: calc(var(--i) * .5s);
-  animation-fill-mode: forwards;
-  opacity: 0;
-  transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(540%) translateX(100%);
+  opacity: 1;
+  transform: scale(1) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(540%) translateX(100%);
   will-change: transform, opacity, font-size;
   z-index: 2;
 }
@@ -388,15 +381,10 @@ svg {
 .wheel__huelabel b {
   display: block;
   font-weight: normal;
-  animation-delay: calc(var(--i) * .5s);
-  animation-fill-mode: forwards;
-  animation: dropIndent 1.5s cubic-bezier(.3, .7, 0, 1);
   transition: font-size 0.1s cubic-bezier(.3, .7, 0, 1);
 }
 
-.wheel__huelabel--flipped b {
-  /*transform: rotate(180deg);*/
-}
+
 
 @keyframes dropIndent {
   0% {
@@ -409,11 +397,8 @@ svg {
 }
 
 .picker .wheel__point {
-  animation: dropIn2 1.6s cubic-bezier(.3, .7, 0, 1);
-  animation-delay: calc(.6s + var(--i) * 100ms);
-  animation-fill-mode: forwards;
-  opacity: 0;
-  fill: var(--bg);
+  opacity: 1;
+  fill: var(--c);
 }
 
 .is-loaded .wheel__point {
@@ -441,10 +426,7 @@ svg {
 }
 
 .poline-picker__circprev {
-  animation: scalein .5s cubic-bezier(.3, .7, 0, 1.2);
-  animation-delay: 2.7s;
-  animation-fill-mode: forwards;
-  transform: translate(-50%, -0%) scale(0) rotate(-720deg);
+  transform: translate(-50%, 50%) scale(0.4);
 }
 
 @keyframes scalein {
@@ -458,12 +440,8 @@ svg {
 }
 
 .picker::before {
-  animation: scaleInWheel 3s cubic-bezier(.3, .7, 0, 1);
-  animation-delay: 0s;
-  animation-fill-mode: forwards;
-  transform: scale(0);
-  /*filter: grayscale(1);*/
-  will-change: transform, opacity;
+  transform: scale(1) rotate(0deg);
+  opacity: 1;
 }
 
 @keyframes scaleInWheel {
@@ -717,10 +695,7 @@ button:not([data-copy-code]) {
   background-color: var(--c);
   background: color-mix(in oklab, var(--c) 75%, var(--bg) 25%);
   flex: 1 0 auto;
-  transform: translateX(-100%) scaleX(1) scale(1.01);
-  animation: draw 1s cubic-bezier(.3, .7, 0, 1);
-  animation-delay: calc(1.8s + var(--i) * .4s);
-  animation-fill-mode: forwards;
+  transform: translateX(0) scaleX(1) scale(1.01);
   transform-origin: 100% 0;
 
   &::after {
@@ -728,9 +703,8 @@ button:not([data-copy-code]) {
     position: absolute;
     inset: 0;
     background: var(--c);
-    transform: translateX(-25%);
+    transform: translateX(0);
     transition: 400ms transform cubic-bezier(.3, .7, 0, 1);
-    animation: drawAfter 1s cubic-bezier(.3, .7, 0, 1);
   }
 }
 
