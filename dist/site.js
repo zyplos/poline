@@ -1,7 +1,7 @@
 console.clear();
 
 import { formatHex, converter, formatCss, inGamut } from 'https://cdn.skypack.dev/culori@^3.1.1';
-import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js';
+
 import { rybHsl2rgb } from "https://esm.sh/rybitten/";
 
 import {
@@ -107,7 +107,7 @@ const $randomize = document.querySelectorAll('[data-randomize]');
 const $toc = document.querySelector('[data-toc]');
 const $export = document.querySelector('[data-export]');
 const $draw = document.querySelector('[data-draw]');
-const $mainCodeBlock = document.querySelector('[data-code="playground"]');
+
 
 $models.forEach($model => {
   $model.innerHTML = hueBasedModels
@@ -162,27 +162,7 @@ if (invertedLightness) {
   poline.invertedLightness = true;
 }
 
-function updateFullCode() {
-  let anchorColors = poline.anchorPoints.map(c => {
-    const [h, s, l] = c.color;
-    return `[${Math.round(h)}, ${s.toFixed(2)}, ${l.toFixed(2)}]`;
-  });
-  const code = `new Poline({
-  anchorColors: ${anchorColors.length > 0 ? `[\n    ${anchorColors.join(',\n    ')}\n  ]` : '[]'
-    },
-  numPoints: ${poline.numPoints},
-  positionFunctionX: 
-    positionFunctions['${fnx}'],
-  positionFunctionY: 
-    positionFunctions['${fny}'],
-  positionFunctionZ: 
-    positionFunctions['${fnz}'],${poline.closedLoop ? `
-  closedLoop: ${poline.closedLoop},` : ''}${poline.invertedLightness ? `
-  invertedLightness: ${poline.invertedLightness},` : ''} 
-});`;
-  $mainCodeBlock.innerHTML = code;
-  hljs.highlightElement($mainCodeBlock);
-}
+
 
 // favicon
 let $favicon = document.querySelector('[rel="icon"]');
@@ -629,7 +609,7 @@ function updateSVG() {
 }
 
 updateSVG();
-updateFullCode();
+
 
 $invertLightness.forEach($l => {
   $l.checked = poline.invertedLightness;
@@ -637,8 +617,7 @@ $invertLightness.forEach($l => {
     poline.invertedLightness = $l.checked;
     invertedLightness = $l.checked;
     updateSVG();
-    updateFullCode();
-    updateCodeBlock('invertedLightness');
+
     $invertLightness.forEach($l => {
       $l.checked = poline.invertedLightness;
     });
@@ -650,8 +629,7 @@ $loop.forEach($l => {
   $l.addEventListener('change', () => {
     poline.closedLoop = $l.checked;
     updateSVG();
-    updateFullCode();
-    updateCodeBlock('closedLoop');
+
     $loop.forEach($l => {
       $l.checked = poline.closedLoop;
     });
@@ -663,8 +641,7 @@ $steps.forEach($step => {
     steps = parseInt($step.value);
     poline.numPoints = steps;
     updateSVG();
-    updateFullCode();
-    updateCodeBlock('points');
+
     $steps.forEach($step => {
       $step.value = steps;
     });
@@ -672,20 +649,12 @@ $steps.forEach($step => {
 });
 
 
-$allSelect.addEventListener('input', () => {
-  fnAll = $allSelect.value;
-  poline.positionFunction = positionFunctions[fnAll];
-  updateSVG();
-  updateFullCode();
-});
-
 $xSelect.forEach($xSelect => {
   $xSelect.addEventListener('input', () => {
     fnx = $xSelect.value;
     poline.positionFunctionX = positionFunctions[fnx];
     updateSVG();
-    updateFullCode();
-    updateCodeBlock('positionFunctions');
+
     $xSelect.forEach($el => {
       $el.value = fnx;
     });
@@ -698,8 +667,7 @@ $ySelect.forEach($ySelect => {
     fny = $ySelect.value;
     poline.positionFunctionY = positionFunctions[fny];
     updateSVG();
-    updateFullCode();
-    updateCodeBlock('positionFunctions');
+
     $ySelect.forEach($el => {
       $el.value = fny;
     });
@@ -711,8 +679,7 @@ $zSelect.forEach($zSelect => {
     fnz = $zSelect.value;
     poline.positionFunctionZ = positionFunctions[fnz];
     updateSVG();
-    updateFullCode();
-    updateCodeBlock('positionFunctions');
+
     $zSelect.forEach($el => {
       $el.value = fnz;
     });
@@ -730,7 +697,7 @@ $randomize.forEach($randomize => {
     });
     poline.updateAnchorPairs();
     updateSVG();
-    updateFullCode();
+
   });
 });
 
@@ -819,7 +786,7 @@ $picker.addEventListener('pointermove', (e) => {
       color: [anchor.color[0], newSaturation, anchor.color[2]]
     });
     updateSVG();
-    updateFullCode();
+
     return;
   }
 
@@ -827,7 +794,7 @@ $picker.addEventListener('pointermove', (e) => {
     e.stopPropagation();
     poline.updateAnchorPoint({ point: currentPoint, xyz: [x, y, currentPoint.z] });
     updateSVG();
-    updateFullCode();
+
     return;
   }
 
@@ -904,13 +871,13 @@ document.addEventListener('keydown', (e) => {
     if (!lastSelectedPoint) return;
     poline.removeAnchorPoint({ point: lastSelectedPoint });
     updateSVG();
-    updateFullCode();
+
   }
 
   if (e.key === 'p') {
     lastSelectedPoint = poline.addAnchorPoint({ xyz: [lastX, lastY, lastY], clamp: true });
     updateSVG();
-    updateFullCode();
+
   }
 
   if (e.key === 'k') {
@@ -930,7 +897,7 @@ document.addEventListener('keydown', (e) => {
       });
 
       updateSVG();
-      updateFullCode();
+
     });
     document.body.appendChild($color);
     $color.click();
@@ -942,13 +909,13 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     poline.shiftHue(-2)
     updateSVG();
-    updateFullCode();
+
   }
 
   if (e.key === 'ArrowRight') {
     poline.shiftHue(2)
     updateSVG();
-    updateFullCode();
+
   }
 
   if (e.key === 's' || e.key === 'S') {
@@ -979,420 +946,43 @@ function generateSpacedAnchorColors(count, jitter = 20) {
   });
 }
 
-// Code example generators - reusable for init and section updates
-const codeExamples = {
-  summoning: (anchors = poline.anchorPoints) => `new Poline({
-  anchorColors: [
-    [${Math.round(anchors[0].color[0])}, ${anchors[0].color[1].toFixed(2)}, ${anchors[0].color[2].toFixed(2)}],
-    [${Math.round(anchors[1].color[0])}, ${anchors[1].color[1].toFixed(2)}, ${anchors[1].color[2].toFixed(2)}],
-    //... more colors
-  ],
-});`,
 
-  points: (numPoints = poline.numPoints) => `new Poline({
-  numPoints: ${numPoints},
-});`,
 
-  anchors: (point = poline.anchorPoints[poline.anchorPoints.length - 1]) => `poline.addAnchorPoint({
-  color: [${Math.round(point.color[0])}, ${point.color[1].toFixed(2)}, ${point.color[2].toFixed(2)}]
-});
+const $hueshift = document.querySelector('[data-hueshift]');
+const $addAnchor = document.querySelector('[data-add-anchor]');
+const $removeAnchor = document.querySelector('[data-remove-anchor]');
 
-// or
-
-poline.addAnchorPoint({
-  xyz: [${point.position[0].toFixed(2)}, ${point.position[1].toFixed(2)}, ${point.position[2].toFixed(2)}]
-});`,
-
-  UpdatingAnchors: (point = poline.anchorPoints[0]) => `poline.updateAnchorPoint({
-  point: poline.anchorPoints[0],
-  color: [${Math.round(point.color[0])}, ${point.color[1].toFixed(2)}, ${point.color[2].toFixed(2)}]
-});`,
-
-  positionFunction: (fnName = fnx) => `import {
-  Poline, positionFunctions
-} from 'poline';
-
-new Poline({
-  positionFunction: 
-    positionFunctions.${fnName},
-});`,
-
-  positionFunctions: (x = fnx, y = fny, z = fnz) => `new Poline({
-  positionFunctionX: 
-    positionFunctions.${x},
-  positionFunctionY: 
-    positionFunctions.${y},
-  positionFunctionZ: 
-    positionFunctions.${z},
-});`,
-
-  closedLoop: (isLooped = poline.closedLoop) => `new Poline({
-  closedLoop: ${isLooped},
-});
-// or
-poline.closedLoop = ${isLooped};`,
-
-  hueShift: () => `poline.shiftHue(1);`,
-
-  closestAnchor: () => `poline.getClosestAnchorPoint(
-  {xyz: [x, y, null], maxDistance: .1}
-)`,
-
-  getColors: () => `poline.colors
-poline.colorsCSS
-poline.colorsCSSlch
-poline.colorsCSSoklch`,
-
-  getColorAt: (position = 0.5) => {
-    const color = poline.getColorAt(position);
-    return `const color = poline.getColorAt(${position.toFixed(3)});
-console.log(color.hslCSS);
-//→ ${color ? color.hslCSS : 'hsl(0, 0%, 0%)'}`;
-  },
-
-  removeAnchor: () => `poline.removeAnchorPoint({
-  point: poline.anchorPoints[
-    poline.anchorPoints.length - 1
-  ]
-});
-// or
-poline.removeAnchorPoint({
-  index: poline.anchorPoints.length - 1
-});`,
-
-  invertedLightness: (isInverted = poline.invertedLightness) => `new Poline({
-  invertedLightness: ${isInverted},
-});
-// or
-poline.invertedLightness = ${isInverted};`,
-};
-
-function updateCodeBlock(name, ...args) {
-  const $code = document.querySelector(`[data-code="${name}"]`);
-  if ($code && codeExamples[name]) {
-    $code.textContent = codeExamples[name](...args);
-    $code.classList.remove('hljs');
-    hljs.highlightElement($code);
-  }
+if ($hueshift) {
+  let initialHueShift = 0;
+  $hueshift.addEventListener('input', (e) => {
+    const newVal = parseInt(e.target.value);
+    const delta = newVal - initialHueShift;
+    poline.shiftHue(delta);
+    initialHueShift = newVal;
+    updateSVG();
+    // updateFullCode(); // Code block removed
+  });
 }
 
-// scripts per section
-const storyScripts = [{
-  section: 'intro',
-  fn: () => {
-    // Disable saturation rings when scrolling back to intro
-    $picker.classList.remove('rings-enabled');
-    poline = new Poline({
-      numPoints: steps,
-      invertedLightness: false,
+if ($addAnchor) {
+  $addAnchor.addEventListener('click', () => {
+    poline.addAnchorPoint({
+      color: [(Math.random() * 360), Math.random(), Math.random()],
     });
-    if (invertedLightness) {
-      poline.invertedLightness = true;
-    }
     updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'summoning',
-  fn: (section) => {
-    exStartHue = Math.random() * 360;
-    poline = new Poline({
-      anchorColors: [
-        [exStartHue, Math.random(), 0.8],
-        [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2],
-      ],
-      invertedLightness: false,
-    });
-    if (invertedLightness) {
-      poline.invertedLightness = true;
-    }
-    updateSVG();
-    updateFullCode();
-    updateCodeBlock('summoning');
-  },
-},
-{
-  section: 'points',
-  fn: (section) => {
-    poline.numPoints = 6;
-    updateSVG();
-    updateFullCode();
-    updateCodeBlock('points', 6);
-  },
-},
-{
-  section: 'anchors',
-  fn: (section) => {
+  });
+}
+
+if ($removeAnchor) {
+  $removeAnchor.addEventListener('click', () => {
     if (poline.anchorPoints.length > 2) {
-      poline.anchorPoints.forEach((anchor, i) => {
-        if (i > 1) poline.removeAnchorPoint({ point: anchor });
-      });
-    }
-    poline.addAnchorPoint({ color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
-    updateCodeBlock('anchors');
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'closedLoop',
-  fn: (section) => {
-    poline.closedLoop = true;
-    updateCodeBlock('closedLoop');
-    updateSVG();
-    updateFullCode();
-  }
-},
-{
-  section: 'positionFunction',
-  fn: (section) => {
-    if (poline.anchorPoints.length > 3) {
-      poline.anchorPoints.forEach((anchor, i) => {
-        if (i > 1) poline.removeAnchorPoint({ point: anchor });
-      });
-    }
-    poline.closedLoop = false;
-
-    const fnName = 'sinusoidalPosition';
-    poline.positionFunction = positionFunctions[fnName];
-    poline.updateAnchorPairs();
-    updateCodeBlock('positionFunction', fnName);
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'positionFunctions',
-  fn: (section) => {
-    if (poline.anchorPoints.length > 3) {
-      poline.anchorPoints.forEach((anchor, i) => {
-        if (i > 1) poline.removeAnchorPoint({ point: anchor });
-      });
-    }
-    poline.closedLoop = false;
-
-    // Reset to arc defaults
-    fnx = 'sinusoidalPosition';
-    fny = 'quadraticPosition';
-    fnz = 'linearPosition';
-
-    poline.positionFunctionX = positionFunctions[fnx];
-    poline.positionFunctionY = positionFunctions[fny];
-    poline.positionFunctionZ = positionFunctions[fnz];
-    $xSelect.forEach($xs => {
-      $xs.value = fnx;
-    });
-    $ySelect.forEach($ys => {
-      $ys.value = fny;
-    });
-    $zSelect.forEach($zs => {
-      $zs.value = fnz;
-    });
-    poline.updateAnchorPairs();
-    updateCodeBlock('positionFunctions', fnx, fny, fnz);
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'UpdatingAnchors',
-  fn: (section) => {
-    // Generate well-spaced hues, keeping original saturation and lightness
-    const count = poline.anchorPoints.length;
-    const baseHue = Math.random() * 360;
-    const hueStep = 360 / count;
-    const jitter = 20;
-
-    poline.anchorPoints.forEach((anchor, i) => {
-      const newHue = (baseHue + i * hueStep + (Math.random() - 0.5) * jitter * 2) % 360;
-      poline.updateAnchorPoint({
-        point: anchor,
-        color: [newHue, anchor.color[1], anchor.color[2]],
-      });
-    });
-    updateCodeBlock('UpdatingAnchors');
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'closestAnchor',
-  fn: (section) => {
-    updateCodeBlock('closestAnchor');
-  },
-},
-{
-  section: 'removeAnchor',
-  fn: (section) => {
-
-    poline.closedLoop = false;
-    if (poline.anchorPoints.length < 3) {
-      while (poline.anchorPoints.length < 3) {
-        poline.addAnchorPoint({ color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
-      }
-    }
-
-    poline.invertedLightness = systemDarkMode;
-    invertedLightness = systemDarkMode;
-    poline.removeAnchorPoint({ index: poline.anchorPoints.length - 1 });
-    updateCodeBlock('removeAnchor');
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'invertedLightness',
-  fn: (section) => {
-    poline.invertedLightness = !systemDarkMode;
-    invertedLightness = !systemDarkMode;
-    updateCodeBlock('invertedLightness');
-
-    $invertLightness.forEach($l => {
-      $l.checked = poline.invertedLightness;
-    });
-
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'colorSpace',
-  fn: (section) => {
-    poline.invertedLightness = systemDarkMode;
-    invertedLightness = systemDarkMode;
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'hueShift',
-  fn: (section) => {
-    updateCodeBlock('hueShift');
-    globalInterval = setInterval(() => {
-      poline.shiftHue(1);
+      poline.removeAnchorPoint({ index: poline.anchorPoints.length - 1 });
       updateSVG();
-      updateFullCode();
-    }, 16.66);
-  }
-},
-{
-  section: 'getColorAt',
-  fn: (section) => {
-    const $colorAt = section.target.querySelector('[data-colorat]');
-    const $colorSample = section.target.querySelector('.color-at-sample');
-
-    const updateColorSample = () => {
-      const val = parseFloat($colorAt.value);
-      updateCodeBlock('getColorAt', val);
-      const color = poline.getColorAt(val);
-      $colorSample.style.background = color.hslCSS;
-      document.documentElement.style.setProperty('--color-at', color.hslCSS);
-    };
-
-    updateColorSample();
-    $colorAt.addEventListener('input', updateColorSample);
-
-    updateSVG();
-    updateFullCode();
-  }
-},
-{
-  section: 'getColors',
-  fn: (section) => {
-    updateCodeBlock('getColors');
-    updateSVG();
-    updateFullCode();
-  },
-},
-{
-  section: 'installation',
-  fn: (section) => {
-    // Static examples already highlighted in initCodeExamples
-  },
-},
-{
-  section: 'playground',
-  fn: (section) => {
-    // Enable saturation rings
-    $picker.classList.add('rings-enabled');
-
-    currentHueModel = 'okhsl';
-    currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
-    $models.forEach($model => $model.value = currentHueModel);
-  },
-}
-];
-
-function initCodeExamples() {
-  Object.keys(codeExamples).forEach(name => updateCodeBlock(name));
-
-  ['colorSpace', 'installation', 'cdn'].forEach(name => {
-    const $code = document.querySelector(`[data-code="${name}"]`);
-    if ($code) hljs.highlightElement($code);
-  });
-
-  updateFullCode();
-}
-
-initCodeExamples();
-
-// create a table of contents
-const $sections = document.querySelectorAll('[data-section]');
-$sections.forEach($s => {
-  const $h2 = $s.querySelector('h2');
-  if ($h2) {
-    const $li = document.createElement('li');
-    $li.innerHTML = `<a href="#${$h2.id}">${$h2.innerHTML}</a>`;
-    $toc.appendChild($li);
-  }
-});
-
-$toc.addEventListener('click', (e) => {
-  e.preventDefault();
-  const $a = e.target;
-  if ($a.tagName !== 'A') return;
-  const $h2 = document.querySelector(`#${$a.getAttribute('href').replace('#', '')}`);
-  $h2.scrollIntoView({ behavior: 'smooth' });
-});
-
-const sections = [...document.querySelectorAll('[data-section]')];
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const script = storyScripts.find(s => s.section === entry.target.dataset.section);
-      if (script) {
-        clearInterval(globalInterval);
-        script.fn(entry);
-      }
-      sections.forEach(section => {
-        if (section === entry.target) {
-          section.parentElement.classList.add('l-sec--active');
-        } else {
-          section.parentElement.classList.remove('l-sec--active');
-        }
-      });
-
     }
   });
-}, {
-  rootMargin: '0px 0px -50% 0px'
-});
+}
 
-sections.forEach(section => {
-  observer.observe(section);
-});
-
-const $dmenu = document.querySelector('[data-menu]');
-
-$dmenu.addEventListener('scroll', (e) => {
-  const scrollY = $dmenu.scrollTop;
-  document.documentElement.style.setProperty('--scroll-y', `${scrollY}px`);
-});
-
-setTimeout(() => {
-  document.documentElement.classList.remove('is-loading');
-  setTimeout(() => {
-    document.documentElement.classList.add('is-loaded');
-  }, 1500);
-}, 2000);
+// Ensure proper initial state for playground
+$picker.classList.add('rings-enabled');
+updateSVG();
+// updateFullCode(); 
