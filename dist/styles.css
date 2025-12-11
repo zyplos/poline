@@ -791,11 +791,11 @@ button:not([data-copy-code]) {
 }
 
 .l-sec+.l-sec {
-  margin-top: 10vh;
+  margin-top: 5vh;
 }
 
 .l-sec--intro {
-  padding-top: 32vh;
+  padding-top: 4rem;
   display: flex;
   align-items: center;
 }
