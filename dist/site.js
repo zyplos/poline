@@ -277,7 +277,7 @@ function updateExport() {
     .then(data => {
       let { colors, paletteTitle } = data;
       $export.innerHTML = `
-          <h2 class="export__title">${paletteTitle}</h2>
+          <input type="text" class="export__title" value="${paletteTitle}" id="paletteTitleInput" style="background: transparent; border: none; border-bottom: 1px solid var(--line); color: inherit; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 2.5rem; letter-spacing: -0.05em; margin-bottom: 0.5rem;" />
           <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
             <button id="copyHexBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy Hex Colors</button>
             <button id="copyCssBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy as CSS Variables</button>
@@ -307,10 +307,9 @@ function updateExport() {
           </ol>
         `;
 
-      const snakeCaseTitle = paletteTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-
       const $copyHexBtn = document.getElementById('copyHexBtn');
       const $copyCssBtn = document.getElementById('copyCssBtn');
+      const $paletteTitleInput = document.getElementById('paletteTitleInput');
 
       if ($copyHexBtn) {
         $copyHexBtn.addEventListener('click', () => {
@@ -322,11 +321,18 @@ function updateExport() {
         });
       }
 
+      const toCamelCase = (str) => {
+        return str.toLowerCase()
+          .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+      }
+
       if ($copyCssBtn) {
         $copyCssBtn.addEventListener('click', () => {
+          const currentTitle = $paletteTitleInput ? $paletteTitleInput.value : paletteTitle;
+          const camelCaseTitle = toCamelCase(currentTitle);
           const cssLines = colorsHEX.map((hex, i) => {
             const step = i === 0 ? 50 : i * 100;
-            return `  --${snakeCaseTitle}-${step}: ${hex};`;
+            return `  --${camelCaseTitle}-${step}: ${hex};`;
           });
           const text = `:root {\n${cssLines.join('\n')}\n}`;
           navigator.clipboard.writeText(text);
