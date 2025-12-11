@@ -129,6 +129,15 @@ p {
   line-height: 1.5;
 }
 
+.input-number {
+  width: 2.5em;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
 .poline-picker {
   z-index: 4;
   --diameter: min(60vmin, 60%);

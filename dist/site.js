@@ -108,6 +108,9 @@ const $toc = document.querySelector('[data-toc]');
 const $export = document.querySelector('[data-export]');
 const $draw = document.querySelector('[data-draw]');
 
+const $stepsVal = document.getElementById('steps-val');
+const $hueshiftVal = document.getElementById('hueshift-val');
+
 
 $models.forEach($model => {
   $model.innerHTML = hueBasedModels
@@ -344,6 +347,7 @@ let untilDrawTimer = null;
 
 function updateUI() {
   $steps.forEach(el => el.value = poline.numPoints);
+  if ($stepsVal) $stepsVal.value = poline.numPoints;
   $invertLightness.forEach(el => el.checked = poline.invertedLightness);
   $loop.forEach(el => el.checked = poline.closedLoop);
 
@@ -643,6 +647,7 @@ $loop.forEach($l => {
 $steps.forEach($step => {
   $step.addEventListener('input', () => {
     steps = parseInt($step.value);
+    if ($stepsVal) $stepsVal.value = steps;
     poline.numPoints = steps;
     updateSVG();
 
@@ -651,6 +656,18 @@ $steps.forEach($step => {
     });
   });
 });
+
+if ($stepsVal) {
+  $stepsVal.addEventListener('input', (e) => {
+    const val = parseInt(e.target.value);
+    if (!isNaN(val) && val > 0) {
+      $steps.forEach(el => {
+        el.value = val;
+        el.dispatchEvent(new Event('input'));
+      });
+    }
+  });
+}
 
 
 $xSelect.forEach($xSelect => {
@@ -960,12 +977,23 @@ if ($hueshift) {
   let initialHueShift = 0;
   $hueshift.addEventListener('input', (e) => {
     const newVal = parseInt(e.target.value);
+    if ($hueshiftVal) $hueshiftVal.value = newVal;
     const delta = newVal - initialHueShift;
     poline.shiftHue(delta);
     initialHueShift = newVal;
     updateSVG();
     // updateFullCode(); // Code block removed
   });
+
+  if ($hueshiftVal) {
+    $hueshiftVal.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      if (!isNaN(val)) {
+        $hueshift.value = val;
+        $hueshift.dispatchEvent(new Event('input'));
+      }
+    });
+  }
 }
 
 if ($addAnchor) {
