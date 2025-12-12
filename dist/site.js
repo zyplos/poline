@@ -147,23 +147,88 @@ $selects.forEach($select => {
 });
 
 let steps = parseInt($steps[0].value);
-
 let startHue = Math.random() * 360;
 let anchorColors = randomHSLPair(startHue);
 
-let poline = new Poline({
+let poline;
+
+let savedClosedLoop = false;
+
+const loadURL = () => {
+  const search = window.location.search;
+  if (search) {
+    try {
+      const params = new URLSearchParams(search);
+
+      const a = JSON.parse(params.get('anchors'));
+      const s = parseInt(params.get('steps'));
+      const il = params.get('invertedLightness') === 'true';
+      const cl = params.get('closedLoop') === 'true';
+      const fx = params.get('fnx');
+      const fy = params.get('fny');
+      const fz = params.get('fnz');
+      const model = params.get('model');
+
+      if (a && s) {
+        steps = s;
+        invertedLightness = il;
+        savedClosedLoop = cl;
+        fnx = fx || fnx;
+        fny = fy || fny;
+        fnz = fz || fnz;
+        currentHueModel = model || currentHueModel;
+
+        // Update UI logic for model
+        currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
+        $models.forEach($model => $model.value = currentHueModel);
+
+        anchorColors = a;
+
+        return true;
+      }
+    } catch (error) {
+      console.error("Failed to load from URL", error);
+    }
+  }
+  return false;
+};
+
+const loaded = loadURL();
+
+poline = new Poline({
   anchorColors,
   numPoints: steps,
   positionFunctionX: positionFunctions[fnx],
   positionFunctionY: positionFunctions[fny],
   positionFunctionZ: positionFunctions[fnz],
-  closedLoop: false,
+  closedLoop: loaded ? savedClosedLoop : false,
   invertedLightness: false, // Always init as false to establish positions
 });
 
 if (invertedLightness) {
   poline.invertedLightness = true;
 }
+
+const updateURL = () => {
+  const params = new URLSearchParams();
+
+  // Anchors - map to HSL array
+  const anchors = poline.anchorPoints.map(p => p.color);
+  params.set('anchors', JSON.stringify(anchors));
+
+  params.set('steps', poline.numPoints);
+  params.set('invertedLightness', poline.invertedLightness);
+  params.set('closedLoop', poline.closedLoop);
+
+  const findFnName = (fn) => Object.keys(positionFunctions).find(key => positionFunctions[key] === fn);
+
+  params.set('fnx', findFnName(poline.positionFunctionX) || 'sinusoidalPosition');
+  params.set('fny', findFnName(poline.positionFunctionY) || 'sinusoidalPosition');
+  params.set('fnz', findFnName(poline.positionFunctionZ) || 'sinusoidalPosition');
+  params.set('model', currentHueModel);
+
+  window.history.replaceState(null, null, '?' + params.toString());
+};
 
 
 
@@ -610,7 +675,8 @@ function updateSVG() {
   clearTimeout(timer);
   timer = setTimeout(() => {
     paintFavicon();
-    updateExport()
+    updateExport();
+    updateURL();
   }, 100);
 
   updateUI();
