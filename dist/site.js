@@ -112,6 +112,7 @@ const $draw = document.querySelector('[data-draw]');
 const $stepsVal = document.getElementById('steps-val');
 const $hueshiftVal = document.getElementById('hueshift-val');
 const $referenceColorVal = document.getElementById('reference-color-val');
+const $matchSaturationBtn = document.getElementById('match-saturation-btn');
 
 
 $models.forEach($model => {
@@ -418,14 +419,18 @@ const updateReferenceStar = () => {
 
   if (!val || val.length < 4) {
     if ($star) $star.style.display = 'none';
+    if ($matchSaturationBtn) $matchSaturationBtn.style.display = 'none';
     return;
   }
 
   const hsl = toHSL(val);
   if (!hsl) {
     if ($star) $star.style.display = 'none';
+    if ($matchSaturationBtn) $matchSaturationBtn.style.display = 'none';
     return;
   }
+
+  if ($matchSaturationBtn) $matchSaturationBtn.style.display = 'block';
 
   const point = hslToPoint([hsl.h || 0, hsl.s, hsl.l], invertedLightness);
 
@@ -803,6 +808,21 @@ if ($stepsVal) {
 if ($referenceColorVal) {
   $referenceColorVal.addEventListener('input', () => {
     updateReferenceStar();
+  });
+}
+
+if ($matchSaturationBtn) {
+  $matchSaturationBtn.addEventListener('click', () => {
+    if (!$referenceColorVal) return;
+    const hsl = toHSL($referenceColorVal.value);
+    if (!hsl) return;
+
+    const s = hsl.s;
+    poline.anchorPoints.forEach(anchor => {
+      anchor.hsl = [anchor.color[0], s, anchor.color[2]];
+    });
+    poline.updateAnchorPairs();
+    updateSVG();
   });
 }
 

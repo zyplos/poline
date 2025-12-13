@@ -138,6 +138,32 @@ p {
   font: inherit;
 }
 
+.controls-box {
+  border: 1px solid var(--grey);
+  padding: 1.5rem;
+}
+
+.controls-box .t {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .controls-box {
+    border-color: var(--line);
+  }
+}
+
+.flex-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.flex-buttons>button {
+  flex: 1 1 auto;
+}
+
 .poline-picker {
   z-index: 4;
   --diameter: min(60vmin, 60%);
