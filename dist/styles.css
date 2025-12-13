@@ -1088,7 +1088,7 @@ code {
   font-family: 'Aboreto', cursive;
 }
 
-.export__hex .wrap {
+/* .export__hex .wrap {
   --offset: -70%;
   transform: translateY(var(--offset));
   animation-delay: calc(var(--delay) + 0.1s);
@@ -1099,7 +1099,7 @@ code {
   transform: translateY(var(--offset));
   animation-delay: var(--delay);
   animation-duration: 0.4s;
-}
+} */
 
 @keyframes slidein {
   0% {
