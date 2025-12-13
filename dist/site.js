@@ -202,7 +202,7 @@ poline = new Poline({
   positionFunctionY: positionFunctions[fny],
   positionFunctionZ: positionFunctions[fnz],
   closedLoop: loaded ? savedClosedLoop : false,
-  invertedLightness: false, // Always init as false to establish positions
+  invertedLightness: loaded ? invertedLightness : false,
 });
 
 if (invertedLightness) {
