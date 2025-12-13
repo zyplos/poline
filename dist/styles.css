@@ -1378,3 +1378,39 @@ code {
     border-color: var(--light);
   }
 }
+
+/* Background controls specific styles */
+.background-controls {
+  flex-wrap: nowrap;
+}
+
+.background-controls button {
+  padding: 0;
+  height: 3rem;
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Disable the default button pseudo-elements for these specific buttons to allow custom backgrounds */
+.background-controls button::before,
+.background-controls button::after {
+  display: none;
+}
+
+#bg-dark-btn {
+  background-color: #000;
+}
+
+#bg-light-btn {
+  background-color: #fff;
+}
+
+#bg-default-btn {
+  /* Diagonal split to represent 'system/default' contrast */
+  background: linear-gradient(135deg, var(--light) 50%, var(--dark) 50%);
+}
+
+.background-controls button:hover {
+  border: 2px solid var(--onBg);
+}

@@ -1174,3 +1174,29 @@ if ($removeAnchor) {
 $picker.classList.add('rings-enabled');
 updateSVG();
 // updateFullCode(); 
+
+// Background controls
+const $bgDarkBtn = document.getElementById('bg-dark-btn');
+const $bgLightBtn = document.getElementById('bg-light-btn');
+const $bgDefaultBtn = document.getElementById('bg-default-btn');
+
+if ($bgDarkBtn) {
+  $bgDarkBtn.addEventListener('click', () => {
+    document.documentElement.style.setProperty('--bg', '#000');
+    document.documentElement.style.setProperty('--onBg', '#fff');
+  });
+}
+
+if ($bgLightBtn) {
+  $bgLightBtn.addEventListener('click', () => {
+    document.documentElement.style.setProperty('--bg', '#fff');
+    document.documentElement.style.setProperty('--onBg', '#000');
+  });
+}
+
+if ($bgDefaultBtn) {
+  $bgDefaultBtn.addEventListener('click', () => {
+    document.documentElement.style.removeProperty('--bg');
+    document.documentElement.style.removeProperty('--onBg');
+  });
+}
