@@ -8,6 +8,7 @@ import {
   Poline,
   positionFunctions,
   randomHSLPair,
+  hslToPoint,
 } from "./index.mjs";
 
 const toHSL = converter('hsl');
@@ -110,6 +111,7 @@ const $draw = document.querySelector('[data-draw]');
 
 const $stepsVal = document.getElementById('steps-val');
 const $hueshiftVal = document.getElementById('hueshift-val');
+const $referenceColorVal = document.getElementById('reference-color-val');
 
 
 $models.forEach($model => {
@@ -409,6 +411,44 @@ function updateExport() {
   $export.style.height = 'auto';
 }
 
+const updateReferenceStar = () => {
+  if (!$referenceColorVal) return;
+  const val = $referenceColorVal.value;
+  let $star = $svg.querySelector('.reference-star');
+
+  if (!val || val.length < 4) {
+    if ($star) $star.style.display = 'none';
+    return;
+  }
+
+  const hsl = toHSL(val);
+  if (!hsl) {
+    if ($star) $star.style.display = 'none';
+    return;
+  }
+
+  const point = hslToPoint([hsl.h || 0, hsl.s, hsl.l], invertedLightness);
+
+  if (!$star) {
+    $star = document.createElementNS(namespaceURI, 'path');
+    $star.classList.add('reference-star');
+    // star shape
+    const d = "M0,-2.5 L0.6,-0.8 L2.4,-0.8 L1,0.2 L1.5,1.9 L0,0.9 L-1.5,1.9 L-1,0.2 L-2.4,-0.8 L-0.6,-0.8 Z";
+    $star.setAttribute('d', d);
+    $star.style.fill = 'none';
+    $star.style.strokeWidth = '1px';
+    $star.style.vectorEffect = 'non-scaling-stroke';
+    $svg.appendChild($star);
+  }
+
+  $star.style.display = 'block';
+  const x = point[0] * svgscale;
+  const y = point[1] * svgscale;
+
+  $star.setAttribute('transform', `translate(${x}, ${y}) scale(1.5)`);
+  $star.style.stroke = invertedLightness ? '#fff' : '#000';
+}
+
 let drawTimer = null;
 function updateDrawer() {
   if (drawTimer) clearTimeout(drawTimer);
@@ -700,6 +740,7 @@ function updateSVG() {
     paintFavicon();
     updateExport();
     updateURL();
+    updateReferenceStar();
   }, 100);
 
   updateUI();
@@ -758,6 +799,12 @@ if ($stepsVal) {
   });
 }
 
+
+if ($referenceColorVal) {
+  $referenceColorVal.addEventListener('input', () => {
+    updateReferenceStar();
+  });
+}
 
 $xSelect.forEach($xSelect => {
   $xSelect.addEventListener('input', () => {
