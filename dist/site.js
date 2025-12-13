@@ -326,6 +326,7 @@ function updateExport() {
       <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
         <button id="copyHexBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy Hex Colors</button>
         <button id="copyCssBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy as CSS Variables</button>
+        <button id="exportSvgBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy SVG</button>
       </div>
       <ol class="export__list">
         ${colorsHEX.map((requestedHex, index) => {
@@ -347,8 +348,10 @@ function updateExport() {
       </ol>
     `;
 
+
   const $copyHexBtn = document.getElementById('copyHexBtn');
   const $copyCssBtn = document.getElementById('copyCssBtn');
+  const $exportSvgBtn = document.getElementById('exportSvgBtn');
   const $paletteTitleInput = document.getElementById('paletteTitleInput');
 
   if ($copyHexBtn) {
@@ -380,6 +383,26 @@ function updateExport() {
       const originalText = $copyCssBtn.innerText;
       $copyCssBtn.innerText = 'Copied!';
       setTimeout(() => $copyCssBtn.innerText = originalText, 1000);
+    });
+  }
+
+  if ($exportSvgBtn) {
+    $exportSvgBtn.addEventListener('click', () => {
+      const rectSize = 100;
+      const width = colorsHEX.length * rectSize;
+      const height = rectSize;
+
+      const rects = colorsHEX.map((color, i) => {
+        return `<rect x="${i * rectSize}" y="0" width="${rectSize}" height="${rectSize}" fill="${color}" />`;
+      }).join('');
+
+      const svgContent = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${rects}</svg>`;
+
+      navigator.clipboard.writeText(svgContent);
+
+      const originalText = $exportSvgBtn.innerText;
+      $exportSvgBtn.innerText = 'Copied!';
+      setTimeout(() => $exportSvgBtn.innerText = originalText, 1000);
     });
   }
 
