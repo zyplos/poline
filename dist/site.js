@@ -344,6 +344,7 @@ function updateExport() {
       <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
         <button id="copyHexBtn">${copyIcon} Hex</button>
         <button id="copyCssBtn">${copyIcon} CSS</button>
+        <button id="copySassBtn">${copyIcon} Sass</button>
         <button id="exportSvgBtn">${copyIcon} SVG</button>
       </div>
       <ol class="export__list">
@@ -401,6 +402,24 @@ function updateExport() {
       const originalText = $copyCssBtn.innerText;
       $copyCssBtn.innerHTML = `${copyIcon} Copied!`;
       setTimeout(() => $copyCssBtn.innerHTML = `${copyIcon} ${originalText}`, 1000);
+    });
+  }
+
+  const $copySassBtn = document.getElementById('copySassBtn');
+  if ($copySassBtn) {
+    $copySassBtn.addEventListener('click', () => {
+      const currentTitle = $paletteTitleInput ? $paletteTitleInput.value : paletteTitle;
+      const camelCaseTitle = toCamelCase(currentTitle);
+      const sassLines = colorsHEX.map((hex, i) => {
+        const step = i === 0 ? 50 : i * 100;
+        return `$${camelCaseTitle}-${step}: ${hex};`;
+      });
+      const text = `${sassLines.join('\n')}`;
+      navigator.clipboard.writeText(text);
+
+      const originalText = $copySassBtn.innerText;
+      $copySassBtn.innerHTML = `${copyIcon} Copied!`;
+      setTimeout(() => $copySassBtn.innerHTML = `${copyIcon} ${originalText}`, 1000);
     });
   }
 
