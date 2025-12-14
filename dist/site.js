@@ -113,6 +113,7 @@ const $stepsVal = document.getElementById('steps-val');
 const $hueshiftVal = document.getElementById('hueshift-val');
 const $referenceColorVal = document.getElementById('reference-color-val');
 const $matchSaturationBtn = document.getElementById('match-saturation-btn');
+const $swapAnchorsBtn = document.getElementById('swap-anchors-btn');
 
 
 $models.forEach($model => {
@@ -1201,6 +1202,14 @@ if ($removeAnchor) {
       poline.removeAnchorPoint({ index: poline.anchorPoints.length - 1 });
       updateSVG();
     }
+  });
+}
+
+if ($swapAnchorsBtn) {
+  $swapAnchorsBtn.addEventListener('click', () => {
+    poline.anchorPoints.reverse();
+    poline.updateAnchorPairs();
+    updateSVG();
   });
 }
 
