@@ -679,6 +679,16 @@ button:not([data-copy-code]) {
   }
 }
 
+.export__actions>button {
+  padding: 0.5em 1rem;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  white-space: nowrap;
+}
+
 .l-wrap {
   display: flex;
 }

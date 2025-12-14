@@ -318,6 +318,9 @@ $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
 let timer = null;
 // let exportAbortController = null;
 
+
+const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="1.2em" viewBox="0 -960 960 960" width="1.2em" fill="currentColor"><path d="M355-240q-27.64 0-47.32-19.68T288-307v-480q0-27.64 19.68-47.32T355-854h384q27.64 0 47.32 19.68T806-787v480q0 27.64-19.68 47.32T739-240H355Zm0-67h384v-480H355v480ZM221-106q-27.64 0-47.32-19.68T154-173v-547h67v547h451v67H221Zm134-201v-480 480Z"/></svg>`;
+
 function updateExport() {
   const colorsOKlab = poline.colors.map(color => toOKlab(
     { mode: currentHueModel, ...currentModelFn(color) }
@@ -339,9 +342,9 @@ function updateExport() {
   $export.innerHTML = `
       <input type="text" class="export__title" value="${paletteTitle}" id="paletteTitleInput" style="background: transparent; border: none; border-bottom: 1px solid var(--line); color: inherit; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 2.5rem; letter-spacing: -0.05em; margin-bottom: 0.5rem;" />
       <div class="export__actions" style="margin-top: 0.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <button id="copyHexBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy Hex Colors</button>
-        <button id="copyCssBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy as CSS Variables</button>
-        <button id="exportSvgBtn" style="padding: 0.5em 1rem; font-size: 0.8rem;">Copy SVG</button>
+        <button id="copyHexBtn">${copyIcon} Hex</button>
+        <button id="copyCssBtn">${copyIcon} CSS</button>
+        <button id="exportSvgBtn">${copyIcon} SVG</button>
       </div>
       <ol class="export__list">
         ${colorsHEX.map((requestedHex, index) => {
@@ -374,8 +377,8 @@ function updateExport() {
       const text = colorsHEX.join('\n');
       navigator.clipboard.writeText(text);
       const originalText = $copyHexBtn.innerText;
-      $copyHexBtn.innerText = 'Copied!';
-      setTimeout(() => $copyHexBtn.innerText = originalText, 1000);
+      $copyHexBtn.innerHTML = `${copyIcon} Copied!`;
+      setTimeout(() => $copyHexBtn.innerHTML = `${copyIcon} ${originalText}`, 1000);
     });
   }
 
@@ -396,8 +399,8 @@ function updateExport() {
       navigator.clipboard.writeText(text);
 
       const originalText = $copyCssBtn.innerText;
-      $copyCssBtn.innerText = 'Copied!';
-      setTimeout(() => $copyCssBtn.innerText = originalText, 1000);
+      $copyCssBtn.innerHTML = `${copyIcon} Copied!`;
+      setTimeout(() => $copyCssBtn.innerHTML = `${copyIcon} ${originalText}`, 1000);
     });
   }
 
@@ -416,8 +419,8 @@ function updateExport() {
       navigator.clipboard.writeText(svgContent);
 
       const originalText = $exportSvgBtn.innerText;
-      $exportSvgBtn.innerText = 'Copied!';
-      setTimeout(() => $exportSvgBtn.innerText = originalText, 1000);
+      $exportSvgBtn.innerHTML = `${copyIcon} Copied!`;
+      setTimeout(() => $exportSvgBtn.innerHTML = `${copyIcon} ${originalText}`, 1000);
     });
   }
 
