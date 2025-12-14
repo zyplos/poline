@@ -239,6 +239,10 @@ svg {
   width: 100%;
 }
 
+.copy-icon {
+  width: inherit;
+}
+
 .wheel__line {
   stroke: var(--onBg);
   stroke-width: 0.15;
@@ -687,6 +691,11 @@ button:not([data-copy-code]) {
   justify-content: center;
   gap: 0.5em;
   white-space: nowrap;
+  flex: 1;
+}
+
+.export__actions>button>span {
+  text-align: center;
 }
 
 .l-wrap {
