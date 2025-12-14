@@ -156,6 +156,7 @@ let anchorColors = randomHSLPair(startHue);
 let poline;
 
 let savedClosedLoop = false;
+let background = 'default';
 
 const loadURL = () => {
   const search = window.location.search;
@@ -171,6 +172,7 @@ const loadURL = () => {
       const fy = params.get('fny');
       const fz = params.get('fnz');
       const model = params.get('model');
+      const bg = params.get('bg');
 
       if (a && s) {
         steps = s;
@@ -180,6 +182,7 @@ const loadURL = () => {
         fny = fy || fny;
         fnz = fz || fnz;
         currentHueModel = model || currentHueModel;
+        background = bg || 'default';
 
         // Update UI logic for model
         currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
@@ -197,6 +200,14 @@ const loadURL = () => {
 };
 
 const loaded = loadURL();
+
+if (background === 'dark') {
+  document.documentElement.style.setProperty('--bg', '#000');
+  document.documentElement.style.setProperty('--onBg', '#fff');
+} else if (background === 'light') {
+  document.documentElement.style.setProperty('--bg', '#fff');
+  document.documentElement.style.setProperty('--onBg', '#000');
+}
 
 poline = new Poline({
   anchorColors,
@@ -229,6 +240,7 @@ const updateURL = () => {
   params.set('fny', findFnName(poline.positionFunctionY) || 'sinusoidalPosition');
   params.set('fnz', findFnName(poline.positionFunctionZ) || 'sinusoidalPosition');
   params.set('model', currentHueModel);
+  params.set('bg', background);
 
   window.history.replaceState(null, null, '?' + params.toString());
 };
@@ -1184,6 +1196,8 @@ if ($bgDarkBtn) {
   $bgDarkBtn.addEventListener('click', () => {
     document.documentElement.style.setProperty('--bg', '#000');
     document.documentElement.style.setProperty('--onBg', '#fff');
+    background = 'dark';
+    updateURL();
   });
 }
 
@@ -1191,6 +1205,8 @@ if ($bgLightBtn) {
   $bgLightBtn.addEventListener('click', () => {
     document.documentElement.style.setProperty('--bg', '#fff');
     document.documentElement.style.setProperty('--onBg', '#000');
+    background = 'light';
+    updateURL();
   });
 }
 
@@ -1198,5 +1214,7 @@ if ($bgDefaultBtn) {
   $bgDefaultBtn.addEventListener('click', () => {
     document.documentElement.style.removeProperty('--bg');
     document.documentElement.style.removeProperty('--onBg');
+    background = 'default';
+    updateURL();
   });
 }
