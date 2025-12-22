@@ -209,6 +209,15 @@ if (background === 'dark') {
 } else if (background === 'light') {
   document.documentElement.style.setProperty('--bg', '#fff');
   document.documentElement.style.setProperty('--onBg', '#000');
+} else if (background !== 'default') {
+  const hsl = toHSL(background);
+  if (hsl) {
+    document.documentElement.style.setProperty('--bg', background);
+    document.documentElement.style.setProperty('--onBg', hsl.l > 0.5 ? '#000' : '#fff');
+  } else {
+    // Fallback if invalid color somehow
+    background = 'default';
+  }
 }
 
 poline = new Poline({
@@ -453,9 +462,10 @@ const updateReferenceStar = () => {
   const val = $referenceColorVal.value;
   let $star = $svg.querySelector('.reference-star');
 
-  if (!val || val.length < 4) {
+  if (!val || val.length < 4 || val === '#000000' || val === '#ffffff') {
     if ($star) $star.style.display = 'none';
     if ($matchSaturationBtn) $matchSaturationBtn.style.display = 'none';
+    if ($bgReferenceBtn) $bgReferenceBtn.style.display = 'none';
     return;
   }
 
@@ -463,10 +473,18 @@ const updateReferenceStar = () => {
   if (!hsl) {
     if ($star) $star.style.display = 'none';
     if ($matchSaturationBtn) $matchSaturationBtn.style.display = 'none';
+    if ($bgReferenceBtn) $bgReferenceBtn.style.display = 'none';
     return;
   }
 
   if ($matchSaturationBtn) $matchSaturationBtn.style.display = 'block';
+
+  if ($bgReferenceBtn) {
+    $bgReferenceBtn.style.display = 'block';
+    $bgReferenceBtn.style.backgroundColor = val;
+    // Determine contrasting icon/border color if needed, but the button is just a color swatch essentially
+    // We can set a border color if it matches the current bg to make it visible
+  }
 
   const point = hslToPoint([hsl.h || 0, hsl.s, hsl.l], invertedLightness);
 
@@ -1233,12 +1251,27 @@ updateSVG();
 const $bgDarkBtn = document.getElementById('bg-dark-btn');
 const $bgLightBtn = document.getElementById('bg-light-btn');
 const $bgDefaultBtn = document.getElementById('bg-default-btn');
+const $bgReferenceBtn = document.getElementById('bg-reference-btn');
 
 if ($bgDarkBtn) {
   $bgDarkBtn.addEventListener('click', () => {
     document.documentElement.style.setProperty('--bg', '#000');
     document.documentElement.style.setProperty('--onBg', '#fff');
     background = 'dark';
+  });
+}
+
+if ($bgReferenceBtn) {
+  $bgReferenceBtn.addEventListener('click', () => {
+    if ($referenceColorVal) {
+      const val = $referenceColorVal.value;
+      const hsl = toHSL(val);
+      if (hsl) {
+        document.documentElement.style.setProperty('--bg', val);
+        document.documentElement.style.setProperty('--onBg', hsl.l > 0.5 ? '#000' : '#fff');
+        background = val;
+      }
+    }
   });
 }
 
