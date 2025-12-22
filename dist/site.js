@@ -114,6 +114,7 @@ const $hueshiftVal = document.getElementById('hueshift-val');
 const $referenceColorVal = document.getElementById('reference-color-val');
 const $matchSaturationBtn = document.getElementById('match-saturation-btn');
 const $swapAnchorsBtn = document.getElementById('swap-anchors-btn');
+const $copyUrlBtn = document.getElementById('copy-url-btn');
 
 
 $models.forEach($model => {
@@ -224,7 +225,7 @@ if (invertedLightness) {
   poline.invertedLightness = true;
 }
 
-const updateURL = () => {
+const getURLParamsString = () => {
   const params = new URLSearchParams();
 
   // Anchors - map to HSL array
@@ -243,7 +244,7 @@ const updateURL = () => {
   params.set('model', currentHueModel);
   params.set('bg', background);
 
-  window.history.replaceState(null, null, '?' + params.toString());
+  return params.toString();
 };
 
 
@@ -779,7 +780,6 @@ function updateSVG() {
   timer = setTimeout(() => {
     paintFavicon();
     updateExport();
-    updateURL();
     updateReferenceStar();
   }, 100);
 
@@ -787,6 +787,17 @@ function updateSVG() {
 }
 
 updateSVG();
+
+if ($copyUrlBtn) {
+  $copyUrlBtn.addEventListener('click', () => {
+    const params = getURLParamsString();
+    const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}?${params}`;
+    navigator.clipboard.writeText(url);
+    const originalText = 'Copy Shareable URL';
+    $copyUrlBtn.textContent = 'Copied!';
+    setTimeout(() => $copyUrlBtn.textContent = originalText, 1000);
+  });
+}
 
 
 $invertLightness.forEach($l => {
@@ -1228,7 +1239,6 @@ if ($bgDarkBtn) {
     document.documentElement.style.setProperty('--bg', '#000');
     document.documentElement.style.setProperty('--onBg', '#fff');
     background = 'dark';
-    updateURL();
   });
 }
 
@@ -1237,7 +1247,6 @@ if ($bgLightBtn) {
     document.documentElement.style.setProperty('--bg', '#fff');
     document.documentElement.style.setProperty('--onBg', '#000');
     background = 'light';
-    updateURL();
   });
 }
 
@@ -1246,6 +1255,5 @@ if ($bgDefaultBtn) {
     document.documentElement.style.removeProperty('--bg');
     document.documentElement.style.removeProperty('--onBg');
     background = 'default';
-    updateURL();
   });
 }
